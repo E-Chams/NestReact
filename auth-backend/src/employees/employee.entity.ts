@@ -1,19 +1,33 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Department } from "src/departments/department.entity";
+import { User } from "src/users/user.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Employee {
+export class Employee extends User {
     @PrimaryGeneratedColumn()
-    id: number;
+    declare id: number;
 
     @Column({ unique: true })
-    email: string;
+    declare email: string;
 
     @Column({ nullable: true, default: '' })  
-    firstName: string;
+    declare firstName: string;
 
     @Column({ nullable: true, default: '' })  
-    lastName: string;
+    declare lastName: string;
+    
+    @Column({ nullable: true, default: '' })  
+    phone: string;
 
     @Column()
-    password: string;
+    declare password: string;
+
+    @Column({ nullable: true , default: ''})
+    position: string;
+
+
+
+   @ManyToOne(() => Department, (department) => department.employees)
+   //departmentId : number;
+   department: Department;
 }

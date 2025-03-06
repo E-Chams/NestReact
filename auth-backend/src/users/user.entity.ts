@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Employee } from 'src/employees/employee.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 
 @Entity()
 export class User {
@@ -14,6 +15,14 @@ export class User {
   @Column({ nullable: true, default: '' })  
   lastName: string;
 
+  @Column({ default: 'user' }) 
+  role: string;
+
   @Column()
   password: string;
+
+/*
+  @OneToOne(() => Employee, (employee) => employee.user)
+  employee: Employee;
+  */
 }

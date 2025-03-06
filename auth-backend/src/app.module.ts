@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EmployeesModule } from './employees/employees.module';
+import { DepartmentsModule } from './departments/departments.module';
+import { EntrepriseModule } from './entreprise/entreprise.module';
 
 @Module({
   imports: [
@@ -16,11 +18,14 @@ import { EmployeesModule } from './employees/employees.module';
       password: process.env.DB_PASSWORD || 'password',
       database: process.env.DB_NAME || 'auth_db',
       autoLoadEntities: true,
+      migrations: ['dist/migrations/*.ts'],
       synchronize: true, 
     }),
-    UsersModule,
-    AuthModule,
-    EmployeesModule,
+    forwardRef(()=>UsersModule),
+    forwardRef(()=>AuthModule),
+    forwardRef(()=>EmployeesModule),
+    forwardRef(()=>DepartmentsModule),
+    forwardRef(() =>EntrepriseModule),
   ],
 })
 export class AppModule {}
