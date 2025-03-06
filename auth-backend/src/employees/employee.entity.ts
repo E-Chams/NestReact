@@ -4,30 +4,14 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn
 
 @Entity()
 export class Employee extends User {
-    @PrimaryGeneratedColumn()
-    declare id: number;
-
-    @Column({ unique: true })
-    declare email: string;
-
-    @Column({ nullable: true, default: '' })  
-    declare firstName: string;
-
-    @Column({ nullable: true, default: '' })  
-    declare lastName: string;
     
-    @Column({ nullable: true, default: '' })  
-    phone: string;
 
     @Column()
-    declare password: string;
+    declare phone: string;
 
     @Column({ nullable: true , default: ''})
     position: string;
 
-
-
    @ManyToOne(() => Department, (department) => department.employees)
-   //departmentId : number;
    department: Department;
 }

@@ -10,11 +10,16 @@ import { Employee } from './employee.entity';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
+  /*
   @Post()
   //@Roles('user')
   async create(@Body() employeeData: Employee): Promise<Employee> {
     return this.employeesService.create(employeeData);
-  }
+  }*/
+    @Post()
+    async createEmployee(@Body() employeeData: Partial<Employee>): Promise<Employee> {
+      return this.employeesService.create(employeeData);
+    }
 
   @Get()
   //@Roles('user')

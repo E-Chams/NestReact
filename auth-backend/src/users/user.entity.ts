@@ -1,7 +1,8 @@
 import { Employee } from 'src/employees/employee.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column,  TableInheritance } from 'typeorm';
 
 @Entity()
+@TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,8 +22,5 @@ export class User {
   @Column()
   password: string;
 
-/*
-  @OneToOne(() => Employee, (employee) => employee.user)
-  employee: Employee;
-  */
+
 }

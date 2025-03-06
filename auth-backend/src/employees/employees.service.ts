@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Employee } from './employee.entity';
 import { Department } from 'src/departments/department.entity';
 import { first } from 'rxjs';
 import { DepartmentsService } from 'src/departments/departments.service';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/user.entity';
 
 
 @Injectable()
@@ -15,10 +17,11 @@ export class EmployeesService {
         private employeesRepository: Repository<Employee>,
         @InjectRepository(Department)
         private departmentsRepository: Repository<Department>,
-        
+        private usersService: UsersService,
+    
     ) {}
    
-    
+    /*
     async create(employeeBody: Employee): Promise<Employee> {
         const { firstName, lastName, email, phone, password, position, department} = employeeBody;
         
@@ -52,7 +55,41 @@ export class EmployeesService {
     
         // Save the employee
         return this.employeesRepository.save(employee);
-    }
+    }*/
+        async create(employeeData: Partial<Employee>): Promise<Employee> {
+            const { department, ...restEmployeeData } = employeeData;
+        
+            // Validate department
+            if (!department || !department.id) {
+                throw new NotFoundException('Department information is required with a valid id');
+            }
+            const existingDepartment = await this.departmentsRepository.findOne({ where: { id: department.id } });
+            if (!existingDepartment) {
+                throw new NotFoundException(`Department with ID ${department.id} not found`);
+            }
+        
+            // Create Employee entity
+            const newEmployee = this.employeesRepository.create({
+                ...restEmployeeData,
+                department: existingDepartment,
+            });
+        
+            // Create associated User (parent of Employee) and save it in the same table
+            const user = new User();
+            user.email = newEmployee.email;
+            user.password = newEmployee.password;
+            user.firstName = newEmployee.firstName;
+            user.lastName = newEmployee.lastName;
+            // Here you can add any other common fields for User
+            await this.usersService.create(user);  // Ensure this creates the User in the 'user' table
+        
+            // Save the employee (which will save the User fields automatically due to STI)
+            const savedEmployee = await this.employeesRepository.save(newEmployee);
+        
+            return savedEmployee;
+        }
+        
+        
 
     async findAll(): Promise<Employee[]> {
         return this.employeesRepository.find({relations : ['department']});
